@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:flutter/services.dart';
 import 'dart:convert';
+
+import 'package:flutter/services.dart';
 
 abstract class WonderPushDelegate {
   void onNotificationReceived(Map<String, dynamic> notification);
@@ -9,31 +10,32 @@ abstract class WonderPushDelegate {
 
 /// The WonderPush SDK main class.
 class WonderPush extends Object {
-
   static void setDelegate(WonderPushDelegate delegate) async {
     _delegate = delegate;
     if (!_methodChannelSetup) {
       _methodChannelSetup = true;
       _methodChannel.setMethodCallHandler((call) async {
         switch (call.method) {
-          case "onNotificationReceived": {
-            if (_delegate != null) {
-              String jsonString = call.arguments as String;
-              Map<String, dynamic> jsonData = jsonDecode(jsonString);
-              _delegate?.onNotificationReceived(jsonData);
+          case "onNotificationReceived":
+            {
+              if (_delegate != null) {
+                String jsonString = call.arguments as String;
+                Map<String, dynamic> jsonData = jsonDecode(jsonString);
+                _delegate?.onNotificationReceived(jsonData);
+              }
             }
-          }
-          break;
-          case "onNotificationOpened": {
-            if (_delegate != null) {
-              List<dynamic> args = call.arguments as List<dynamic>;
-              String jsonString = args[0];
-              int buttonIndex = args[1];
-              Map<String, dynamic> jsonData = jsonDecode(jsonString);
-              _delegate?.onNotificationOpened(jsonData, buttonIndex);
+            break;
+          case "onNotificationOpened":
+            {
+              if (_delegate != null) {
+                List<dynamic> args = call.arguments as List<dynamic>;
+                String jsonString = args[0];
+                int buttonIndex = args[1];
+                Map<String, dynamic> jsonData = jsonDecode(jsonString);
+                _delegate?.onNotificationOpened(jsonData, buttonIndex);
+              }
             }
-          }
-          break;
+            break;
         }
       });
     }
@@ -47,7 +49,7 @@ class WonderPush extends Object {
 
   // Subscribing users
 
-  /// Prompts user to subscribe to push notifications on iOS, subscribes the user directly on Android.
+  /// Prompts user to subscribe to push notifications on iOS and android, subscribes the user directly on Android below Android 13 .
   static Future<void> subscribeToNotifications([bool fallbackToSettings = false]) async {
     await _methodChannel.invokeMethod('subscribeToNotifications', fallbackToSettings);
   }
@@ -59,8 +61,7 @@ class WonderPush extends Object {
 
   /// Tells whether user is subscribed to push notifications.
   static Future<bool> isSubscribedToNotifications() async {
-    final bool? result =
-        await _methodChannel.invokeMethod('isSubscribedToNotifications');
+    final bool? result = await _methodChannel.invokeMethod('isSubscribedToNotifications');
     return result ?? false;
   }
 
@@ -122,8 +123,7 @@ class WonderPush extends Object {
   static Future<dynamic> getPropertyValue(String property) async {
     Map<String, String> args = <String, String>{};
     args.putIfAbsent("property", () => property);
-    final Object? result =
-        await _methodChannel.invokeMethod('getPropertyValue', args);
+    final Object? result = await _methodChannel.invokeMethod('getPropertyValue', args);
     return result;
   }
 
@@ -135,8 +135,7 @@ class WonderPush extends Object {
   static Future<List> getPropertyValues(String property) async {
     Map<String, String> args = <String, String>{};
     args.putIfAbsent("property", () => property);
-    final List? result =
-        await _methodChannel.invokeMethod('getPropertyValues', args);
+    final List? result = await _methodChannel.invokeMethod('getPropertyValues', args);
     return result ?? [];
   }
 
@@ -289,29 +288,25 @@ class WonderPush extends Object {
 
   /// Returns the installationId, or null if the WonderPush servers have not been contacted just yet.
   static Future<String?> getInstallationId() async {
-    final String? installationId =
-        await _methodChannel.invokeMethod('getInstallationId');
+    final String? installationId = await _methodChannel.invokeMethod('getInstallationId');
     return installationId;
   }
 
   /// Returns the deviceId
   static Future<String?> getDeviceId() async {
-    final String? deviceId =
-        await _methodChannel.invokeMethod('getDeviceId');
+    final String? deviceId = await _methodChannel.invokeMethod('getDeviceId');
     return deviceId;
   }
 
   /// Returns the accessToken
   static Future<String?> getAccessToken() async {
-    final String? accessToken =
-        await _methodChannel.invokeMethod('getAccessToken');
+    final String? accessToken = await _methodChannel.invokeMethod('getAccessToken');
     return accessToken;
   }
 
   /// Returns the userConsent
   static Future<bool?> getUserConsent() async {
-    final bool? userConsent =
-        await _methodChannel.invokeMethod('getUserConsent');
+    final bool? userConsent = await _methodChannel.invokeMethod('getUserConsent');
     return userConsent;
   }
 
